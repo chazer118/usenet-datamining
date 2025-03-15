@@ -9,7 +9,7 @@ from collections import Counter
 
 addresses = []
 date = []
-message = []
+messageArray = []
 messageID = []
 
 print("This will convert a Usenet .MBOX file into a .CSV file.")
@@ -23,14 +23,19 @@ for message in mbox:
     #Set msg to a matching string "From"
     msgFrom = str(message.get("From", ""))
     msgDate = str(message.get("Date"))
+    msgContent = str(message.get_payload())
 
     #Remove commas
     msgFrom = msgFrom.replace(",", "")
     msgDate = msgDate.replace(",", "")
+    msgContent = msgContent.replace(",", "")
+
+    msg_clean = msgContent.replace("\n", "").replace("\r", "").replace("\t", "")
 
     #Append to the corresponding array
     addresses.append(msgFrom)
     date.append(msgDate)
+    messageArray.append(msg_clean.strip())
 
 """ with open (csvFile, 'w') as fp:
     for item in addresses:
@@ -42,12 +47,12 @@ with open(csvFile, 'w') as csv_file:
                             quotechar=' ', skipinitialspace=False, escapechar='\\')
     
     count = Counter(addresses)
-    writer.writerow(['Sender'] + ['Date'])
+    writer.writerow(['Sender'] + ['Date'] + ['Message'])
     for i in range(len(date)):
         #Writes addr to .csv file
-        writer.writerow([addresses[i], date[i]])
+        writer.writerow([addresses[i], date[i], messageArray[i]])
 
-#I have a feeling this is not super efficient and thats why my CSVs are mismatched.
-#It does do what it's meant to do though...
-
-    
+# Getting there... I think. However msg content is now overflowing into address columns.
+# Is this specific to numbers or is this how the data is outputted?
+# Is get_payload() the correct function to call?
+# TAB AND CARRIAGE RETURN!

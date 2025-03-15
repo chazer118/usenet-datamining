@@ -5,11 +5,7 @@ that are *not* in the header, changes them to "xFrom," and writes
 them to a new mailbox.
 
 Originally by Avery Dame Griff (2016)
-Edited and updated by Lily Mumby (2025)
 '''
-
-#To-do: update to python3
-
 
 batch = []
 

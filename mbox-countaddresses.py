@@ -36,6 +36,7 @@ for message in mbox:
     for item in addresses:
         fp.write("%s\n" % item) 
  """
+
 print("Writing to .csv file")
 
 #Create CSV file, define boring stuff and then format it properly and export the data line by line :)
