@@ -16,4 +16,12 @@ and their respective Newsgroups into a .csv file - retrieved from the MBOX heade
 **mbox-to-csv.py** takes a MBOX file as an input, reads the email address, date and content
 of each message and outputs it to a .csv file (handy for data analysis!)
 
+**csv-to-json.py** quick way to convert csv data to .json format. not great for my application 
+but this does work
+
+**csv-to-json2.py** THIS script does what I need it to do. Converts .csv data to .json format
+and gets Max's dict function to accept the data. nerds i dont even know if json is the best
+way to store and retrieve this data, but i'm down a rabbit hole and this works best for me.
+
+
 
