@@ -29,7 +29,7 @@ jsonFile = input("Enter output .json file: ")
 
 print ("Reading mailbox")
 
-def mboxToJson(mbox, jsonFile):
+def parseMBOX(mbox):
     for message in mbox: 
         #Set msg to a matching string "From"
         msgFrom = str(message.get("From", ""))
@@ -63,7 +63,8 @@ def mboxToJson(mbox, jsonFile):
         #\n is added once it has been appended to an array so we need to work here
         #msg_clean = msgContent.replace(" \n", "\n")
         
-        with open (jsonFile, 'w') as json_file:
+def writeToJson(jsonFile):
+     with open (jsonFile, 'w') as json_file:
                 
                 senderData['Sender'] = addresses
                 dateData['Date'] = date
@@ -79,9 +80,11 @@ def mboxToJson(mbox, jsonFile):
                 json_file.write(jsonDate)
                 json_file.write(jsonSubject)
                 json_file.write(jsonMsg)
-    
+
+
 start = time.perf_counter()
-mboxToJson(mbox, jsonFile)
+parseMBOX(mbox)
+writeToJson(jsonFile)
 finish = time.perf_counter()
 
 print(f"Converted successfully in {finish-start:0.4f} seconds")
