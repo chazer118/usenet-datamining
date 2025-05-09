@@ -1,11 +1,10 @@
 # 1. It creates end of line chars at the end of each key which is not good, but easily human fixable if I can't sort it
-# 2. Could be two separate functions really to make the code easier to read and more modular
 
-import csv
 import json
 import time
 import mailbox
 from collections import Counter
+import re
 
 jsonArray = []
 senderArray = []
@@ -23,42 +22,64 @@ messageArray = []
 messageID = []
 subjectArray = []
 
+maskedAddresses = []
+
 print("This will convert a Usenet .MBOX file into a .JSON file.")
 mbox = mailbox.mbox(input("Enter input .mbox file: "))
 jsonFile = input("Enter output .json file: ")
+limit = 400
+
+pattern1 = '\S+@\S+\.\S+'
+pattern2 = r"(?:<)?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(?:>)?"
 
 print ("Reading mailbox")
 
-def parseMBOX(mbox):
-    for message in mbox: 
-        #Set msg to a matching string "From"
-        msgFrom = str(message.get("From", ""))
-        msgDate = str(message.get("Date"))
-        msgSubject = str(message.get("Subject"))
-        msgContent = str(message.get_payload())
+def parseMBOX(mbox, limit):
+        count = 0
 
-        #Remove commas
-        #msgFrom = msgFrom.replace(",", "")
-        #msgDate = msgDate.replace(",", "")
-        #msgContent = msgContent.replace(",", "")
+        for message in mbox: 
+                if count >= limit:
+                        print(f"Output has been limited to {limit} messages.")
+                        break
 
-        #Hides the username from the email addresses
-        try:
-            
-                emailSplit = msgFrom.split('@')
-                usernameMasked = 'x'*(len(emailSplit[0]))
-                emailMasked = (usernameMasked + '@' + emailSplit[1])
-                #print(emailMasked)
-        except:
-             print("An error occurred trying to mask this address: " + msgFrom)
-             pass
+                #Set msg to a matching string "From"
+                msgFrom = str(message.get("From", ""))
+                msgDate = str(message.get("Date"))
+                msgSubject = str(message.get("Subject"))
+                msgContent = str(message.get_payload())
 
+                #Remove commas
+                #msgFrom = msgFrom.replace(",", "")
+                #msgDate = msgDate.replace(",", "")
+                #msgContent = msgContent.replace(",", "")
 
-        #Append to the corresponding array
-        addresses.append(emailMasked)
-        date.append(msgDate)
-        subjectArray.append(msgSubject)
-        messageArray.append(msgContent.replace(" \n", "\n").replace(" \n\n", "\n\n"))
+                mailAddresses = re.findall(pattern2, msgContent)
+
+                try:
+                        for i in range(len(mailAddresses)):
+                                split = mailAddresses[i].split('@')
+                                usernameMasked = 'x'*(len(split[0]))
+                                maskedEmail = (usernameMasked + "@" + split[1])
+                                maskedAddresses.append(maskedEmail)
+
+                                msgContent = msgContent.replace(mailAddresses[i], maskedEmail)
+                except:
+                        print("An error occurred whilst trying to mask email addresses")
+                        pass
+        
+                #Append all to the corresponding array
+                addresses.append(msgFrom)
+                date.append(msgDate)
+                subjectArray.append(msgSubject)
+                messageArray.append(msgContent.replace(" \n", "\n").replace(" \n\n", "\n\n"))
+
+                count += 1
+
+                #Debugging stuff
+                print(msgContent)
+                print("Found: " + str(mailAddresses))
+                print("Masked: " + str(maskedAddresses))
+                input("Press enter to continue...")
 
         #\n is added once it has been appended to an array so we need to work here
         #msg_clean = msgContent.replace(" \n", "\n")
@@ -83,8 +104,8 @@ def writeToJson(jsonFile):
 
 
 start = time.perf_counter()
-parseMBOX(mbox)
-writeToJson(jsonFile)
+parseMBOX(mbox, limit)
+#writeToJson(jsonFile)
 finish = time.perf_counter()
 
 print(f"Converted successfully in {finish-start:0.4f} seconds")
