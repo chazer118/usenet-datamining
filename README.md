@@ -6,6 +6,12 @@ Historical Collection mbox files. Identifies all instances of "from"
 that are *not* in the header, changes them to "xFrom," and writes
 them to a new mailbox file. (Python2) - by Dame Avery-Griff
 
+**mbox-to-json.py** - a simple script to turn an MBOX archive into a .json file.
+Handy for using this data in Max, which can natively parse .json data!
+This script also masks any emails in the message content and a limit on the amount of
+messages the script exports can be set. By default it is 400 of the oldest messages.
+Files must be in the same dir as the script. 
+
 **mbox-countaddresses.py** is a simple script to read from 
 a local usenet database stored in MBOX format and count the
 amount of unique addresses. Prints out to .csv file.
